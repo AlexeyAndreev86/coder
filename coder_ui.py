@@ -2,7 +2,7 @@ from PyQt5 import QtWidgets
 from PyQt5.QtWidgets import QApplication, QFileDialog
 import sys
 import os
-import subprocess
+import shutil
 import importlib
 from google.protobuf import text_format
 
@@ -84,11 +84,8 @@ class Window(QtWidgets.QWidget):
             cfg_path = os.path.basename(self.config)
             # Копируем выбранный файл в подпапку pb2 и пытаемся его импортировать
             try:
-                if os.name == 'nt':
-                    copy_command = f'copy {self.config} {os.path.join(os.path.splitext(os.getcwd())[0], "pb2")}'
-                else:
-                    copy_command = f'cp {self.config} {os.path.splitext(os.getcwd())[0] + "/pb2"}'
-                subprocess.getoutput(copy_command)
+                shutil.copy(src=self.config, dst=os.path.join(os.path.splitext(os.getcwd())[0], "pb2"))
+
                 path = os.path.join('pb2', cfg_path[:-3]).replace('\\', '.').replace('/', '.')
                 self.compiled_config_file = importlib.import_module(path)
                 self.label1.setText(f'Chosen file: {cfg_path}')
